@@ -9,6 +9,13 @@ class Penguin {
     currentState = peng;
   }
   
+  boolean getJumping() {
+    return isJumping;
+  }
+  boolean getDucking() {
+    return isDucking;
+  }
+  
   void jump(PImage j) {
     currentState = j;
     isJumping = true;
