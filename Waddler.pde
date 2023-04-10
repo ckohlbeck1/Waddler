@@ -1,12 +1,4 @@
 
-
-// TO DO:
-// 1. Losing Condition, when to call beenhit()
-
-// OPTIONAL:
-// 1. Make penguin look like he's running 
-
-
 import processing.sound.*;
 
 SoundFile BG;
@@ -47,7 +39,7 @@ int highScore1 = 0;
 int highScore2 = 0;
 int highScore3 = 0;
 
-int scoreNeeded = 0;
+int arrayIndex = 0;
 
 // 1: Duck, 0: Jump
 int[] order = {0,0,1,0,1,0,1,0,1,0,0,1};
@@ -79,6 +71,8 @@ void draw() {
     if(mousePressed == true) {
       if(mouseX > width * 0.1 && mouseX < width * 0.1 + 40 && mouseY > height * 0.05 && mouseY < height * 0.05 + 40) {
         levelChosen = false;
+        won = false;
+        lost = false;
         level = 0;
         displayMenu();
       }
@@ -88,14 +82,6 @@ void draw() {
   
 
   if(level != 0 && level != 4 && !won && !lost) {
-    if(!levelChosen) {
-      if(level == 1) {
-        scoreNeeded = 120;
-      }
-      
-      // Need to add level 2 and 3
-
-    }
     levelChosen = true;
     path = new Obstacles(jumpingObstacle1, jumpingObstacle2, duckingObstacle1);
     
@@ -144,54 +130,61 @@ void draw() {
   
       if(millis() > startingMesTime + 5200) {
         
+
         path.obstaclesMove(moving);
         
+        if((moving % 200 == 100 || moving % 200 == -100) && moving != 300 && moving != 500) {
+
+          // Should be jumping
+          if(order[arrayIndex] == 0) {
+            if(player1.getJumping() == false) {
+              path.beenhit();
+            }
+          }
+          // Should be ducking
+          else if(order[arrayIndex] == 1) {
+            if(player1.getDucking() == false) {
+              path.beenhit();
+            }
+          }
+          
+          
+          // Reset Array Index when array is over
+          if(arrayIndex == 11) {
+            arrayIndex = 0;
+          }
+          else {
+            arrayIndex++;
+          }
+          
+        }
+        
         if(level == 1) {
-          moving = moving - 4;
-          if(millis() > backToRunTime + 1800) {
+          moving = moving - 2;
+          if(millis() > backToRunTime + 2800) {
             player1.run(runningPeng); 
           }
         }
         else if(level == 2) {
-          moving = moving - 6;
-          if(millis() > backToRunTime + 1200) {
+          moving = moving - 5;
+          if(millis() > backToRunTime + 1300) {
             player1.run(runningPeng); 
           }
         }
         else if(level == 3) {
-          moving = moving - 8;
-          if(millis() > backToRunTime + 800) {
+          moving = moving - 10;
+          if(millis() > backToRunTime + 600) {
             player1.run(runningPeng); 
           }
         }
-        
-        // HERE: Need to check If an obstacle is hit
-        if(keyPressed) {
-          
-          // Need to debug
-          // Things to account for: jump versus duck obstacles, not pressing a key at all, pressing key too late too early 
-          //if(level == 1) {
-          // if(score < scoreNeeded - 4 || score > scoreNeeded + 4) {
-          //  path.beenhit();
-          // }
-          // if(score > scoreNeeded + 10) {
-          //  scoreNeeded = scoreNeeded + 50;
-          // }
-           
-         }
-         
-         
-        }
-        
-        
-        
-        
+
       }
 
      // You Lost
     if(path.checkHit()) {
       lost = true;
       moving = 600;
+      arrayIndex = 0;
       levelChosen = false;
       player1.run(runningPeng);
       gameWonLost();
@@ -202,9 +195,12 @@ void draw() {
     if(score == 10000) {
       won = true;
       moving = 600;
+      arrayIndex = 0;
       levelChosen = false;
       player1.run(runningPeng);
       gameWonLost();
+    }
+    
     }
     
   }
@@ -295,7 +291,7 @@ void draw() {
     
     if(millis() > timeDone + 7000) {
       displayMenu();
-      won = false;
+      lost = false;
       score = 0;
       level = 0;
     }
@@ -303,6 +299,7 @@ void draw() {
   }
   
 }
+
 
 
 
@@ -376,7 +373,7 @@ void whichLevel() {
       
       level = 4;
     }
-
+    
   }
 }
 

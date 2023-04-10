@@ -8,6 +8,7 @@ class Obstacles {
   PImage ob3;
     
   boolean hit = false;
+  int position = 0;
   
   Obstacles(PImage jump1, PImage jump2, PImage duck) {
       ob1 = jump1;
@@ -47,8 +48,15 @@ class Obstacles {
       image(ob2, moving + i + 1800, height * 0.7);
       image(ob2, moving + i + 2000, height * 0.7);
       image(ob3, moving + i + 2200, height * 0.65);
+      
+      position = moving + i;
+      
     }
 
+  }
+  
+  int getPosition() {
+    return position;
   }
   
   void beenhit() {
